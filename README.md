@@ -63,7 +63,7 @@ src/app/
 
 1. **Clone repositori**
    ```bash
-   git clone [https://github.com/](https://github.com/)demosusanto/employee-management.git
+   git clone https://github.com/demosusanto/employee-management.git
    cd employee-management
    ```
 
