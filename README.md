@@ -1,4 +1,4 @@
-# CorpFlow — Employee Management Backoffice
+# CorpFlow - Employee Management Backoffice
 
 Aplikasi web *Employee Management Backoffice* berbasis **Angular** dan **Tailwind CSS** dengan desain *responsive* untuk desktop maupun mobile.
 
