@@ -1,0 +1,93 @@
+<div
+    class="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 via-indigo-50/40 to-slate-200 px-4 py-10">
+    <div class="w-full max-w-md rounded-2xl border border-slate-200/80 bg-white p-8 shadow-xl shadow-slate-200/60">
+        <!-- Brand Header -->
+        <div class="mb-8 text-center">
+            <div
+                class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-lg font-bold text-white shadow-md shadow-indigo-200">
+                CF
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900">Employee Backoffice</h1>
+            <p class="mt-1.5 text-sm text-slate-500">Masuk untuk mengelola data karyawan</p>
+        </div>
+
+        <!-- Error Alert -->
+        @if (errorMessage()) {
+        <div class="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700" role="alert">
+            {{ errorMessage() }}
+        </div>
+        }
+
+        <!-- Login Form -->
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5" novalidate>
+            <div>
+                <label for="username" class="mb-1.5 block text-sm font-medium text-slate-700">
+                    Username
+                </label>
+                <input id="username" type="text" formControlName="username" placeholder="Masukkan username"
+                    autocomplete="username"
+                    class="w-full rounded-xl border px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2"
+                    [class]="
+            loginForm.controls.username.invalid && loginForm.controls.username.touched
+              ? 'border-rose-400 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-200'
+              : 'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-200'
+          " />
+                @if (loginForm.controls.username.invalid && loginForm.controls.username.touched) {
+                <p class="mt-1.5 text-xs text-rose-600">Username wajib diisi.</p>
+                }
+            </div>
+
+            <div>
+                <label for="password" class="mb-1.5 block text-sm font-medium text-slate-700">
+                    Password
+                </label>
+                <div class="relative">
+                    <input id="password" [type]="showPassword() ? 'text' : 'password'" formControlName="password"
+                        placeholder="Masukkan password" autocomplete="current-password"
+                        class="w-full rounded-xl border py-2.5 pl-4 pr-16 text-sm text-slate-900 outline-none transition focus:ring-2"
+                        [class]="
+              loginForm.controls.password.invalid && loginForm.controls.password.touched
+                ? 'border-rose-400 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-200'
+                : 'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-200'
+            " />
+                    <button type="button" (click)="togglePasswordVisibility()"
+                        class="absolute inset-y-0 right-0 flex items-center px-3.5 text-xs font-semibold text-slate-500 hover:text-indigo-600">
+                        {{ showPassword() ? 'Sembunyi' : 'Lihat' }}
+                    </button>
+                </div>
+                @if (loginForm.controls.password.invalid && loginForm.controls.password.touched) {
+                @if (loginForm.controls.password.hasError('required')) {
+                <p class="mt-1.5 text-xs text-rose-600">Password wajib diisi.</p>
+                } @else if (loginForm.controls.password.hasError('minlength')) {
+                <p class="mt-1.5 text-xs text-rose-600">Password minimal 6 karakter.</p>
+                }
+                }
+            </div>
+
+            <button type="submit"
+                class="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:scale-[0.99]">
+                Sign In
+            </button>
+        </form>
+
+        <!-- Demo Credentials Helper -->
+        <div class="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div class="flex items-center justify-between gap-2">
+                <div class="text-xs text-slate-600">
+                    <p class="font-semibold text-slate-700">Akun Demo:</p>
+                    <p class="mt-0.5">
+                        Username: <code class="rounded bg-white px-1.5 py-0.5 font-mono text-indigo-700">admin</code>
+                    </p>
+                    <p class="mt-0.5">
+                        Password: <code
+                            class="rounded bg-white px-1.5 py-0.5 font-mono text-indigo-700">password123</code>
+                    </p>
+                </div>
+                <button type="button" (click)="fillDemoCredentials()"
+                    class="shrink-0 rounded-lg border border-indigo-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50">
+                    Isi Otomatis
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

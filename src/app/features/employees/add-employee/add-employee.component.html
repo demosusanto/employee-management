@@ -1,0 +1,230 @@
+<div class="mx-auto max-w-3xl space-y-6">
+    <!-- Breadcrumb & Header -->
+    <div>
+        <a routerLink="/employees"
+            class="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 transition hover:text-indigo-800">
+            <span>&larr;</span>
+            <span>Kembali ke Employee List</span>
+        </a>
+        <h1 class="mt-2 text-2xl font-bold tracking-tight text-slate-900">
+            {{ isEditMode() ? 'Edit Employee' : 'Add New Employee' }}
+        </h1>
+        <p class="mt-1 text-sm text-slate-500">
+            {{
+            isEditMode()
+            ? 'Perbarui data karyawan di bawah ini, lalu simpan perubahan.'
+            : 'Lengkapi seluruh data karyawan di bawah ini.'
+            }}
+            Semua kolom bertanda <span class="font-semibold text-rose-600">*</span> wajib diisi.
+        </p>
+    </div>
+
+    <!-- Form Card -->
+    <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()"
+        class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8" novalidate>
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <!-- Username -->
+            <div>
+                <label for="username" class="mb-1.5 block text-sm font-medium text-slate-700">
+                    Username <span class="text-rose-500">*</span>
+                </label>
+                <input id="username" type="text" formControlName="username" placeholder="contoh: budi.santoso"
+                    class="w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2"
+                    [class]="
+            isFieldInvalid('username')
+              ? 'border-rose-400 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-200'
+              : 'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-200'
+          " />
+                @if (isFieldInvalid('username')) {
+                @if (employeeForm.controls.username.hasError('required')) {
+                <p class="mt-1.5 text-xs text-rose-600">Username wajib diisi.</p>
+                } @else if (employeeForm.controls.username.hasError('pattern')) {
+                <p class="mt-1.5 text-xs text-rose-600">
+                    Hanya huruf, angka, titik, underscore, atau tanda hubung (tanpa spasi).
+                </p>
+                } @else if (employeeForm.controls.username.hasError('usernameTaken')) {
+                <p class="mt-1.5 text-xs text-rose-600">Username ini sudah digunakan.</p>
+                }
+                }
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label for="email" class="mb-1.5 block text-sm font-medium text-slate-700">
+                    Email <span class="text-rose-500">*</span>
+                </label>
+                <input id="email" type="email" formControlName="email" placeholder="contoh: budi@corpflow.co.id"
+                    class="w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2"
+                    [class]="
+            isFieldInvalid('email')
+              ? 'border-rose-400 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-200'
+              : 'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-200'
+          " />
+                @if (isFieldInvalid('email')) {
+                @if (employeeForm.controls.email.hasError('required')) {
+                <p class="mt-1.5 text-xs text-rose-600">Email wajib diisi.</p>
+                } @else {
+                <p class="mt-1.5 text-xs text-rose-600">Format email tidak valid.</p>
+                }
+                }
+            </div>
+
+            <!-- First Name -->
+            <div>
+                <label for="firstName" class="mb-1.5 block text-sm font-medium text-slate-700">
+                    First Name <span class="text-rose-500">*</span>
+                </label>
+                <input id="firstName" type="text" formControlName="firstName" placeholder="Nama depan"
+                    class="w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2"
+                    [class]="
+            isFieldInvalid('firstName')
+              ? 'border-rose-400 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-200'
+              : 'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-200'
+          " />
+                @if (isFieldInvalid('firstName')) {
+                <p class="mt-1.5 text-xs text-rose-600">First name wajib diisi.</p>
+                }
+            </div>
+
+            <!-- Last Name -->
+            <div>
+                <label for="lastName" class="mb-1.5 block text-sm font-medium text-slate-700">
+                    Last Name <span class="text-rose-500">*</span>
+                </label>
+                <input id="lastName" type="text" formControlName="lastName" placeholder="Nama belakang"
+                    class="w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2"
+                    [class]="
+            isFieldInvalid('lastName')
+              ? 'border-rose-400 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-200'
+              : 'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-200'
+          " />
+                @if (isFieldInvalid('lastName')) {
+                <p class="mt-1.5 text-xs text-rose-600">Last name wajib diisi.</p>
+                }
+            </div>
+
+            <!-- Birth Date (Datetime Picker, max today) -->
+            <div>
+                <label for="birthDate" class="mb-1.5 block text-sm font-medium text-slate-700">
+                    Birth Date <span class="text-rose-500">*</span>
+                </label>
+                <input id="birthDate" type="datetime-local" formControlName="birthDate" [max]="maxBirthDateTime"
+                    class="w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2"
+                    [class]="
+            isFieldInvalid('birthDate')
+              ? 'border-rose-400 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-200'
+              : 'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-200'
+          " />
+                @if (isFieldInvalid('birthDate')) {
+                @if (employeeForm.controls.birthDate.hasError('required')) {
+                <p class="mt-1.5 text-xs text-rose-600">Tanggal lahir wajib diisi.</p>
+                } @else if (employeeForm.controls.birthDate.hasError('futureDate')) {
+                <p class="mt-1.5 text-xs text-rose-600">
+                    Tanggal lahir tidak boleh melebihi hari ini.
+                </p>
+                } @else {
+                <p class="mt-1.5 text-xs text-rose-600">Format tanggal lahir tidak valid.</p>
+                }
+                }
+            </div>
+
+            <!-- Basic Salary (Numeric only + live preview) -->
+            <div>
+                <label for="basicSalary" class="mb-1.5 block text-sm font-medium text-slate-700">
+                    Basic Salary (IDR) <span class="text-rose-500">*</span>
+                </label>
+                <input id="basicSalary" type="text" inputmode="decimal" formControlName="basicSalary"
+                    placeholder="contoh: 12500000"
+                    class="w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2"
+                    [class]="
+            isFieldInvalid('basicSalary')
+              ? 'border-rose-400 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-200'
+              : 'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-200'
+          " />
+                @if (isFieldInvalid('basicSalary')) {
+                @if (employeeForm.controls.basicSalary.hasError('required')) {
+                <p class="mt-1.5 text-xs text-rose-600">Basic salary wajib diisi.</p>
+                } @else if (employeeForm.controls.basicSalary.hasError('pattern')) {
+                <p class="mt-1.5 text-xs text-rose-600">
+                    Basic salary harus berupa angka yang valid.
+                </p>
+                } @else if (employeeForm.controls.basicSalary.hasError('min')) {
+                <p class="mt-1.5 text-xs text-rose-600">Basic salary harus lebih dari 0.</p>
+                }
+                } @else if (salaryPreview !== null) {
+                <p class="mt-1.5 text-xs font-medium text-indigo-600">
+                    Format tampilan: {{ salaryPreview | rupiah }}
+                </p>
+                }
+            </div>
+
+            <!-- Status -->
+            <div>
+                <label for="status" class="mb-1.5 block text-sm font-medium text-slate-700">
+                    Status <span class="text-rose-500">*</span>
+                </label>
+                <select id="status" formControlName="status"
+                    class="w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2"
+                    [class]="
+            isFieldInvalid('status')
+              ? 'border-rose-400 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-200'
+              : 'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-200'
+          ">
+                    <option value="" disabled>Pilih status karyawan...</option>
+                    @for (status of statuses; track status) {
+                    <option [value]="status">{{ status }}</option>
+                    }
+                </select>
+                @if (isFieldInvalid('status')) {
+                <p class="mt-1.5 text-xs text-rose-600">Status wajib dipilih.</p>
+                }
+            </div>
+
+            <!-- Group (Searchable Dropdown 10 Dummy Groups) -->
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-slate-700">
+                    Group <span class="text-rose-500">*</span>
+                </label>
+                <app-searchable-dropdown formControlName="group" [options]="groups"
+                    placeholder="Pilih group karyawan..." [hasError]="isFieldInvalid('group')" />
+                @if (isFieldInvalid('group')) {
+                <p class="mt-1.5 text-xs text-rose-600">Group wajib dipilih.</p>
+                }
+            </div>
+
+            <!-- Description (Datetime sesuai spesifikasi) -->
+            <div class="sm:col-span-2">
+                <label for="description" class="mb-1.5 block text-sm font-medium text-slate-700">
+                    Description (Date &amp; Time) <span class="text-rose-500">*</span>
+                </label>
+                <input id="description" type="datetime-local" formControlName="description"
+                    class="w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2 sm:max-w-sm"
+                    [class]="
+            isFieldInvalid('description')
+              ? 'border-rose-400 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-200'
+              : 'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-200'
+          " />
+                @if (isFieldInvalid('description')) {
+                <p class="mt-1.5 text-xs text-rose-600">Description (datetime) wajib diisi.</p>
+                } @else {
+                <p class="mt-1 text-xs text-slate-400">
+                    Catatan stempel waktu pendaftaran / pencatatan karyawan.
+                </p>
+                }
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-8 flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:justify-end">
+            <button type="button" (click)="onCancel()"
+                class="rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                Cancel
+            </button>
+            <button type="submit"
+                class="rounded-xl px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition focus:outline-none focus:ring-2 focus:ring-offset-2"
+                [class]="isEditMode() ? 'bg-amber-500 hover:bg-amber-600 focus:ring-amber-400' : 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500'">
+                {{ isEditMode() ? 'Update Employee' : 'Save Employee' }}
+            </button>
+        </div>
+    </form>
+</div>

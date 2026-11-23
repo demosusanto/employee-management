@@ -1,0 +1,350 @@
+<div class="space-y-6">
+    <!-- Page Header -->
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <div class="flex items-center gap-2.5">
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Employee List</h1>
+                <span class="rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-indigo-700">
+                    {{ totalAllEmployees() }} Total
+                </span>
+            </div>
+            <p class="mt-1 text-sm text-slate-500">
+                Kelola data karyawan, cari dengan kombinasi filter, dan lihat rincian profil.
+            </p>
+        </div>
+
+        <a routerLink="/employees/add"
+            class="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <span class="text-base leading-none">+</span>
+            <span>Add Employee</span>
+        </a>
+    </div>
+
+    <!-- Search & Filter Panel (Multi-parameter dengan rule AND) -->
+    <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+            <!-- Parameter 1: Keyword -->
+            <div class="md:col-span-5">
+                <label for="search-keyword"
+                    class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Cari Nama / Username / Email
+                </label>
+                <input id="search-keyword" type="text" [value]="filterState().searchQuery"
+                    (input)="onSearchChange($event)" placeholder="Contoh: budi, pratama, @corpflow..."
+                    class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200" />
+            </div>
+
+            <!-- Parameter 2: Group (AND) -->
+            <div class="md:col-span-3">
+                <label for="filter-group"
+                    class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Group
+                </label>
+                <select id="filter-group" [value]="filterState().selectedGroup" (change)="onGroupChange($event)"
+                    class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                    <option value="">Semua Group</option>
+                    @for (group of groups; track group) {
+                    <option [value]="group">{{ group }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Parameter 3: Status (AND) -->
+            <div class="md:col-span-2">
+                <label for="filter-status"
+                    class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Status
+                </label>
+                <select id="filter-status" [value]="filterState().selectedStatus" (change)="onStatusChange($event)"
+                    class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                    <option value="">Semua Status</option>
+                    @for (status of statuses; track status) {
+                    <option [value]="status">{{ status }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Reset Button -->
+            <div class="flex items-end md:col-span-2">
+                <button type="button" (click)="onResetFilters()"
+                    [disabled]="!hasActiveFilter() && !filterState().sortColumn"
+                    class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50">
+                    Reset
+                </button>
+            </div>
+        </div>
+
+        @if (hasActiveFilter()) {
+        <div class="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 text-xs text-slate-600">
+            <span class="font-medium text-slate-500">Filter aktif (AND):</span>
+            @if (filterState().searchQuery.trim()) {
+            <span class="rounded-md bg-indigo-50 px-2 py-0.5 font-medium text-indigo-700">
+                Keyword: "{{ filterState().searchQuery.trim() }}"
+            </span>
+            }
+            @if (filterState().selectedGroup) {
+            <span class="rounded-md bg-indigo-50 px-2 py-0.5 font-medium text-indigo-700">
+                Group: {{ filterState().selectedGroup }}
+            </span>
+            }
+            @if (filterState().selectedStatus) {
+            <span class="rounded-md bg-indigo-50 px-2 py-0.5 font-medium text-indigo-700">
+                Status: {{ filterState().selectedStatus }}
+            </span>
+            }
+            <span class="ml-auto font-semibold text-slate-700">
+                {{ totalFiltered() }} hasil ditemukan
+            </span>
+        </div>
+        }
+    </section>
+
+    <!-- Data Container -->
+    <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <!-- Desktop Table View -->
+        <div class="hidden overflow-x-auto md:block">
+            <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+                <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                    <tr>
+                        <th scope="col" class="px-5 py-3.5">
+                            <button type="button" (click)="onSort('firstName')"
+                                class="inline-flex items-center gap-1 hover:text-indigo-600">
+                                <span>Employee</span>
+                                <span class="text-[11px] text-slate-400">
+                                    {{ filterState().sortColumn === 'firstName' ? (filterState().sortDirection === 'asc'
+                                    ? '↑' : '↓') : '↕' }}
+                                </span>
+                            </button>
+                        </th>
+                        <th scope="col" class="px-5 py-3.5">
+                            <button type="button" (click)="onSort('email')"
+                                class="inline-flex items-center gap-1 hover:text-indigo-600">
+                                <span>Email</span>
+                                <span class="text-[11px] text-slate-400">
+                                    {{ filterState().sortColumn === 'email' ? (filterState().sortDirection === 'asc' ?
+                                    '↑' : '↓') : '↕' }}
+                                </span>
+                            </button>
+                        </th>
+                        <th scope="col" class="px-5 py-3.5">
+                            <button type="button" (click)="onSort('group')"
+                                class="inline-flex items-center gap-1 hover:text-indigo-600">
+                                <span>Group</span>
+                                <span class="text-[11px] text-slate-400">
+                                    {{ filterState().sortColumn === 'group' ? (filterState().sortDirection === 'asc' ?
+                                    '↑' : '↓') : '↕' }}
+                                </span>
+                            </button>
+                        </th>
+                        <th scope="col" class="px-5 py-3.5">
+                            <button type="button" (click)="onSort('basicSalary')"
+                                class="inline-flex items-center gap-1 hover:text-indigo-600">
+                                <span>Basic Salary</span>
+                                <span class="text-[11px] text-slate-400">
+                                    {{ filterState().sortColumn === 'basicSalary' ? (filterState().sortDirection ===
+                                    'asc' ? '↑' : '↓') : '↕' }}
+                                </span>
+                            </button>
+                        </th>
+                        <th scope="col" class="px-5 py-3.5">
+                            <button type="button" (click)="onSort('status')"
+                                class="inline-flex items-center gap-1 hover:text-indigo-600">
+                                <span>Status</span>
+                                <span class="text-[11px] text-slate-400">
+                                    {{ filterState().sortColumn === 'status' ? (filterState().sortDirection === 'asc' ?
+                                    '↑' : '↓') : '↕' }}
+                                </span>
+                            </button>
+                        </th>
+                        <th scope="col" class="px-5 py-3.5 text-right">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    @for (emp of paginatedEmployees(); track emp.username) {
+                    <tr (click)="onViewDetail(emp)" class="cursor-pointer transition hover:bg-indigo-50/40">
+                        <td class="whitespace-nowrap px-5 py-3.5">
+                            <div class="font-semibold text-slate-900">
+                                {{ emp.firstName }} {{ emp.lastName }}
+                            </div>
+                            <div class="text-xs text-slate-500">&#64;{{ emp.username }}</div>
+                        </td>
+                        <td class="whitespace-nowrap px-5 py-3.5 text-slate-600">
+                            {{ emp.email }}
+                        </td>
+                        <td class="whitespace-nowrap px-5 py-3.5 text-slate-700">
+                            {{ emp.group }}
+                        </td>
+                        <td class="whitespace-nowrap px-5 py-3.5 font-medium text-slate-800">
+                            {{ emp.basicSalary | rupiah }}
+                        </td>
+                        <td class="whitespace-nowrap px-5 py-3.5">
+                            <span
+                                class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset"
+                                [class]="getStatusBadgeClass(emp.status)">
+                                {{ emp.status }}
+                            </span>
+                        </td>
+                        <td class="whitespace-nowrap px-5 py-3.5 text-right">
+                            <div class="inline-flex items-center justify-end gap-2">
+                                <button type="button" (click)="onEditEmployee(emp, $event)"
+                                    class="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800 transition hover:bg-amber-100">
+                                    Edit
+                                </button>
+                                <button type="button" (click)="onDeleteEmployee(emp, $event)"
+                                    class="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-100">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    } @empty {
+                    <tr>
+                        <td colspan="6" class="px-5 py-12 text-center">
+                            <p class="text-sm font-semibold text-slate-700">Data karyawan tidak ditemukan</p>
+                            <p class="mt-1 text-xs text-slate-500">
+                                Coba ubah kata kunci pencarian atau reset filter yang aktif.
+                            </p>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="divide-y divide-slate-100 md:hidden">
+            @for (emp of paginatedEmployees(); track emp.username) {
+            <div (click)="onViewDetail(emp)" class="cursor-pointer space-y-3 p-4 transition active:bg-slate-50">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <p class="truncate font-semibold text-slate-900">
+                            {{ emp.firstName }} {{ emp.lastName }}
+                        </p>
+                        <p class="truncate text-xs text-slate-500">&#64;{{ emp.username }}</p>
+                    </div>
+                    <span class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset"
+                        [class]="getStatusBadgeClass(emp.status)">
+                        {{ emp.status }}
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-xs text-slate-600">
+                    <div class="col-span-2 truncate">
+                        <span class="text-slate-400">Email:</span> {{ emp.email }}
+                    </div>
+                    <div>
+                        <span class="text-slate-400">Group:</span> {{ emp.group }}
+                    </div>
+                    <div class="text-right font-semibold text-slate-800">
+                        {{ emp.basicSalary | rupiah }}
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-1">
+                    <button type="button" (click)="onEditEmployee(emp, $event)"
+                        class="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800">
+                        Edit
+                    </button>
+                    <button type="button" (click)="onDeleteEmployee(emp, $event)"
+                        class="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700">
+                        Delete
+                    </button>
+                </div>
+            </div>
+            } @empty {
+            <div class="px-4 py-10 text-center">
+                <p class="text-sm font-semibold text-slate-700">Data karyawan tidak ditemukan</p>
+                <p class="mt-1 text-xs text-slate-500">Coba ubah atau reset filter pencarian.</p>
+            </div>
+            }
+        </div>
+
+        <!-- Pagination & Page Size Footer -->
+        <div
+            class="flex flex-col gap-4 border-t border-slate-200 bg-slate-50/70 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+            <div class="flex flex-wrap items-center gap-3 text-xs text-slate-600">
+                <div class="flex items-center gap-2">
+                    <label for="page-size" class="font-medium">Tampilkan</label>
+                    <select id="page-size" [value]="filterState().pageSize" (change)="onPageSizeChange($event)"
+                        class="rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-800 outline-none focus:border-indigo-500">
+                        @for (size of pageSizeOptions; track size) {
+                        <option [value]="size">{{ size }}</option>
+                        }
+                    </select>
+                    <span>per halaman</span>
+                </div>
+
+                <span class="hidden text-slate-300 sm:inline">|</span>
+
+                <span>
+                    Menampilkan <strong class="text-slate-800">{{ displayRange().start }}–{{ displayRange().end
+                        }}</strong>
+                    dari <strong class="text-slate-800">{{ totalFiltered() }}</strong> data
+                </span>
+            </div>
+
+            <nav class="flex items-center justify-center gap-1" aria-label="Pagination">
+                <button type="button" (click)="goToPage(safeCurrentPage() - 1)" [disabled]="safeCurrentPage() === 1"
+                    class="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40">
+                    Prev
+                </button>
+
+                @for (item of visiblePages(); track $index) {
+                @if (item === '...') {
+                <span class="px-2 text-xs text-slate-400">...</span>
+                } @else {
+                <button type="button" (click)="goToPage(item)"
+                    class="min-w-[32px] rounded-lg px-2.5 py-1.5 text-xs font-semibold transition" [class]="
+                safeCurrentPage() === item
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-100'
+              ">
+                    {{ item }}
+                </button>
+                }
+                }
+
+                <button type="button" (click)="goToPage(safeCurrentPage() + 1)"
+                    [disabled]="safeCurrentPage() === totalPages()"
+                    class="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40">
+                    Next
+                </button>
+            </nav>
+        </div>
+        <!-- Delete Confirmation Modal -->
+        @if (employeeToDelete(); as target) {
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-xs"
+            (click)="cancelDelete()" role="dialog" aria-modal="true">
+            <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl"
+                (click)="$event.stopPropagation()">
+                <div class="flex items-start gap-4">
+                    <div
+                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100 text-lg font-bold text-red-600">
+                        !
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900">Hapus Data Karyawan?</h3>
+                        <p class="mt-1.5 text-sm text-slate-600">
+                            Anda yakin ingin menghapus
+                            <strong class="text-slate-900">{{ target.firstName }} {{ target.lastName }}</strong>
+                            (&#64;{{ target.username }})? Data ini akan dihapus dari daftar karyawan.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex flex-col-reverse gap-2.5 sm:flex-row sm:justify-end">
+                    <button type="button" (click)="cancelDelete()"
+                        class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                        Batal
+                    </button>
+                    <button type="button" (click)="confirmDelete()"
+                        class="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700">
+                        Ya, Hapus
+                    </button>
+                </div>
+            </div>
+        </div>
+        }
+    </section>
+</div>
