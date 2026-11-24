@@ -30,7 +30,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
         type="button"
         [disabled]="isDisabled()"
         (click)="toggleDropdown()"
-        class="flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-left text-sm outline-none transition focus:ring-2"
+        class="flex w-full items-center justify-between gap-2 rounded-xl border py-2.5 pl-3.5 pr-4 text-left text-sm outline-none transition focus:ring-2"
         [class]="
           hasError()
             ? 'border-rose-400 bg-rose-50/30 text-slate-900 focus:border-rose-500 focus:ring-rose-200'

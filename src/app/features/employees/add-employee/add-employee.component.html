@@ -193,12 +193,12 @@
             </div>
 
             <!-- Description (Datetime sesuai spesifikasi) -->
-            <div class="sm:col-span-2">
+            <div class="min-w-0">
                 <label for="description" class="mb-1.5 block text-sm font-medium text-slate-700">
                     Description (Date &amp; Time) <span class="text-rose-500">*</span>
                 </label>
                 <input id="description" type="datetime-local" formControlName="description"
-                    class="w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2 sm:max-w-sm"
+                    class="w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2"
                     [class]="
             isFieldInvalid('description')
               ? 'border-rose-400 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-200'
