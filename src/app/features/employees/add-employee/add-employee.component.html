@@ -108,13 +108,21 @@
                 <label for="birthDate" class="mb-1.5 block text-sm font-medium text-slate-700">
                     Birth Date <span class="text-rose-500">*</span>
                 </label>
-                <input id="birthDate" type="datetime-local" formControlName="birthDate" [max]="maxBirthDateTime"
-                    class="w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2"
+                <div class="relative">
+                    <input id="birthDate" type="datetime-local" formControlName="birthDate" [max]="maxBirthDateTime"
+                    [class.is-empty]="!employeeForm.controls.birthDate.value" class="datetime-input peer w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2"
                     [class]="
             isFieldInvalid('birthDate')
               ? 'border-rose-400 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-200'
               : 'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-200'
           " />
+                    @if (!employeeForm.controls.birthDate.value) {
+                    <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-400 peer-focus:hidden">Pilih tanggal &amp; waktu</span>
+                    }
+                    <svg class="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M5 11h14M6 5h12a1 1 0 011 1v13a1 1 0 01-1 1H6a1 1 0 01-1-1V6a1 1 0 011-1z" />
+                    </svg>
+                </div>
                 @if (isFieldInvalid('birthDate')) {
                 @if (employeeForm.controls.birthDate.hasError('required')) {
                 <p class="mt-1.5 text-xs text-rose-600">Tanggal lahir wajib diisi.</p>
@@ -197,13 +205,21 @@
                 <label for="description" class="mb-1.5 block text-sm font-medium text-slate-700">
                     Description (Date &amp; Time) <span class="text-rose-500">*</span>
                 </label>
-                <input id="description" type="datetime-local" formControlName="description"
-                    class="w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2"
+                <div class="relative">
+                    <input id="description" type="datetime-local" formControlName="description"
+                    [class.is-empty]="!employeeForm.controls.description.value" class="datetime-input peer w-full rounded-xl border px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:ring-2"
                     [class]="
             isFieldInvalid('description')
               ? 'border-rose-400 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-200'
               : 'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-200'
           " />
+                    @if (!employeeForm.controls.description.value) {
+                    <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-400 peer-focus:hidden">Pilih tanggal &amp; waktu</span>
+                    }
+                    <svg class="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M5 11h14M6 5h12a1 1 0 011 1v13a1 1 0 01-1 1H6a1 1 0 01-1-1V6a1 1 0 011-1z" />
+                    </svg>
+                </div>
                 @if (isFieldInvalid('description')) {
                 <p class="mt-1.5 text-xs text-rose-600">Description (datetime) wajib diisi.</p>
                 } @else {

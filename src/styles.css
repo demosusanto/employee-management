@@ -26,3 +26,36 @@ select:not([multiple]) {
   background-size: 1rem 1rem;
   padding-right: 2.5rem;
 }
+
+/* datetime-local: tampilan konsisten di desktop & perangkat mobile asli */
+input.datetime-input[type='datetime-local'] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  position: relative;
+  display: block;
+  min-height: 2.75rem;
+  line-height: 1.25rem;
+  padding-right: 2.75rem;
+  text-align: left;
+  background-image: none;
+}
+/* Ketika kosong, sembunyikan teks bawaan browser (dd/mm/yyyy atau kosong di Android) agar placeholder tampil */
+input.datetime-input[type='datetime-local'].is-empty:not(:focus) {
+  color: transparent;
+}
+input.datetime-input[type='datetime-local']::-webkit-date-and-time-value {
+  text-align: left;
+  min-height: 1.25rem;
+}
+/* Area klik seluruh input membuka picker; ikon bawaan disembunyikan */
+input.datetime-input[type='datetime-local']::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+}
